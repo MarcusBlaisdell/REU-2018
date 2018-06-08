@@ -1,0 +1,49 @@
+set: 13a
+loading data for perceptron:
+load complete
+opening results file:
+running perceptron . . . 
+Perceptron runTime: 0.0423560142517
+loading data for Pegasos . . . 
+load complete
+running Pegasos . . .
+Pegasos runTime: 7.91593599319
+closing output file . . .
+set: 13b
+loading data for perceptron:
+load complete
+opening results file:
+running perceptron . . . 
+Perceptron runTime: 0.0363261699677
+loading data for Pegasos . . . 
+load complete
+running Pegasos . . .
+Pegasos runTime: 7.95463418961
+closing output file . . .
+set: 13c
+loading data for perceptron:
+load complete
+opening results file:
+running perceptron . . . 
+Perceptron runTime: 0.0552539825439
+loading data for Pegasos . . . 
+load complete
+running Pegasos . . .
+Pegasos runTime: 7.93932199478
+closing output file . . .
+set: 13d
+loading data for perceptron:
+load complete
+opening results file:
+running perceptron . . . 
+Perceptron runTime: 0.0845220088959
+loading data for Pegasos . . . 
+load complete
+running Pegasos . . .
+Pegasos runTime: 8.18644404411
+closing output file . . .
+set: 15a
+loading data for perceptron:
+load complete
+opening results file:
+running perceptron . . . 

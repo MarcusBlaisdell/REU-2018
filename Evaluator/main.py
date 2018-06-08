@@ -18,8 +18,8 @@ subList = ['a', 'b', 'c', 'd']
 
 ### run the comparison for each training/testing set:
 
-#thePath = "/home/marcus/Data/Genomic-Data/Testing/"
-thePath = "/data/doppa/users/mblaisdell/genome-assembly-datasets/Testing/"
+thePath = "/home/marcus/Data/Genomic-Data/Testing/"
+#thePath = "/data/doppa/users/mblaisdell/genome-assembly-datasets/Testing/"
 resultsStringPre = "results_"
 resultsStringPost = ".csv"
 
@@ -29,14 +29,16 @@ statusFile.close()
 
 for kmer in kmerList:
     myPGClass.kmer = kmer
-    for sub in subList:
-        trainData = thePath + str(kmer) + sub + '-train'
-        testData = thePath + str(kmer) + sub + '-test'
-        resultsFile = resultsStringPre + str(kmer) + sub + resultsStringPost
+    myPRClass.kmer = kmer
+    for letter in subList:
+        trainData = thePath + str(kmer) + letter + '-train'
+        testData = thePath + str(kmer) + letter + '-test'
+        resultsFile = resultsStringPre + str(kmer) + letter + resultsStringPost
+        print 'resultsFile: ', resultsFile
 
         statusFile = open ("status.txt", "a")
-        print 'set: ', str(kmer) + sub
-        statusFile.write('set: ' + str(str(kmer) + sub) + '\n')
+        print 'set: ', str(kmer) + letter
+        statusFile.write('set: ' + str(str(kmer) + letter) + '\n')
 
         print 'loading data for perceptron:'
         statusFile.write ('loading data for perceptron:' + '\n')
@@ -65,6 +67,7 @@ for kmer in kmerList:
         print 'Perceptron runTime: ', endTime - startTime
         outFile.write (str(endTime - startTime))
         statusFile = open("status.txt", "a")
+        statusFile.write('Perceptron runTime: ' + str(endTime - startTime) + '\n')
 
         ### end test perceptron
 

@@ -169,8 +169,6 @@ class pg_Class():
 
         kmerSize = ((4**self.kmer) + 1)
         self.w = np.zeros(kmerSize, dtype=float)
-        #self.w = np.zeros(100000000, dtype = float)
-
 
         ### choose A_t as a proper subset of |m| where |A_t| = k; uniformly at random
         A_t = []

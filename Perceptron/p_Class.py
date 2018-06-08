@@ -21,7 +21,9 @@ class p_Class():
     #klist = [1, 5, 10]
     klist = [1]
     w = np.array([]) # weight is an numpy array
+    b = 25.0 # bias term
     eta = 1.0 # eta is learning rate
+    lam = 1e-1 # regularization parameter
     trainMistakes = 0
     trainTotal = 0
     testMistakes = 0
@@ -124,6 +126,8 @@ class p_Class():
 
     ### end loadData functions
 
+    ### perceptron function:
+
     def perceptron(self, outFile):
         self.trainTotal = len(self.trainData)
         xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
@@ -133,7 +137,7 @@ class p_Class():
         ### initialize weight vector:
         #self.w = np.zeros(len(self.trainData[0][0]), dtype=float)
         ### weight vector size is {[4^(len(k-mer)) - len(k-mer)] + 1}
-        self.kmer = 15
+
         kmerSize = ((4**self.kmer) + 1)
         self.w = np.zeros(kmerSize, dtype=float)
         #self.w = np.zeros(10000000, dtype=float)
@@ -210,6 +214,95 @@ class p_Class():
         ### end iteration loop
 
     ### end perceptron function
+
+    ### perceptronBias function:
+
+    def perceptronBias(self, outFile):
+        self.trainTotal = len(self.trainData)
+        xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
+        yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
+        yHat = 0
+
+        ### initialize weight vector:
+        #self.w = np.zeros(len(self.trainData[0][0]), dtype=float)
+        ### weight vector size is {[4^(len(k-mer)) - len(k-mer)] + 1}
+
+        kmerSize = ((4**self.kmer) + 1)
+        self.w = np.zeros(kmerSize, dtype=float)
+        #self.w = np.zeros(10000000, dtype=float)
+
+        ### repeat for T iterations:
+        for t in range(self.T):
+            # reset global mistake count so each iteration starts from zero
+            self.trainMistakes = 0
+            self.trainnpr = 0
+            self.traindp = 0
+            #print 'Iteration: ', t
+            for l in range (len(self.trainData)):
+                xit = np.array(self.trainData[l][0])
+                yit = self.trainData[l][1]
+
+                ### make the prediction: yHat = y*(<w,x>)
+                yHat = yit * (self.dotProd(xit) + self.b)
+                #print 'initial eval: ', yit, ' : ', yHat
+
+                ### update weight accordingly,
+                ### if predicted value and actual value don't match,
+                ## update weight,
+                ### if they do match no update required
+                if yit == 1:
+                    if yHat > 0:
+                        self.trainnpr += 1
+                        self.traindp += 1
+                    else:
+                        #print yit, ' : ', yHat
+                        self.updateWeight(xit, yit)
+                        self.trainMistakes += 1
+                else:
+                    if yHat <= 0:
+                        #print yit, ' : ', yHat
+                        self.traindp += 1
+                        self.trainMistakes += 1
+                        self.updateWeight(xit, yit)
+
+
+                '''
+                if (yHat != yit):
+                    self.updateWeight(xit, yit)
+                    ### update incorrect prediction count
+                    self.trainMistakes += 1
+                else:
+                    ### if prediction was correct, update correct prediction counts
+                    self.traindp += 1
+                    self.trainnpr += 1
+                '''
+
+                ### end train loop, trains on each sample in trainData
+
+            ### report results of training
+
+            self.trainAccuracy = 100 - (100 * (self.trainMistakes / float(self.trainTotal)) )
+            #print 'trainMistakes = ', self.trainMistakes, '   : train success = ', \
+                  #self.trainAccuracy, '%'
+            if self.traindp > 0:
+                self.trainPrecision = self.trainnpr / float(self.traindp)
+            self.trainRecall = self.trainnpr / float(self.trainGood)
+            #print 'trainPrecision: ', self.trainPrecision
+            #print 'trainRecall: ', self.trainRecall
+            if (self.trainPrecision + self.trainRecall) > 0:
+                self.trainF1 = 2 * self.trainPrecision * self.trainRecall / (self.trainPrecision + self.trainRecall)
+            #print 'F1: ', self.trainF1
+            outFile.write('train' + ',' + str(self.trainPrecision) + ',' + str(self.trainRecall) \
+                          + ',' + str(self.trainF1) + ',' + str(self.trainAccuracy)\
+                          + ',' + str(self.T) + ',' + str(self.k) + ',' \
+                          + str(self.trainMistakes) + ',' + str(t + 1) + '\n')
+
+            #self.validationWeight(outFile, t)
+            self.testWeight(outFile, t)
+
+        ### end iteration loop
+
+    ### end perceptronBias function
 
     ### use new weight to test accuracy on validation dataList
 
@@ -385,12 +478,16 @@ class p_Class():
     ### end dotProd() function
 
     ### updateWeight function:
+
     def updateWeight(self, xarray, yStar):
         #startTime = time.time()
 
         ### update the weights in the weight vector that are in xit
         for element in xarray:
-            self.w[element[0]] += self.eta * yStar * element[1]
+            self.w[element[0]] += self.eta * self.lam * yStar * element[1]
+
+        ### update the bias term:
+        #self.b = self.b + yStar
 
         #endTime = time.time()
         #print 'updateWeight: ', endTime - startTime

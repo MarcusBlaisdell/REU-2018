@@ -28,6 +28,8 @@ class p_Class():
     #klist = [1, 5, 10]
     klist = [2000]
     w = np.array([]) # weight is a numpy array
+    b = 0.0 # bias term
+    biasIndex = 0
     eta = 0.0 # eta is calculated for each iteration
     trainMistakes = 0
     trainTotal = 0
@@ -149,7 +151,7 @@ class p_Class():
         ### initialize weight vector:
         #self.w = np.zeros(len(self.trainData[0][0]), dtype=float)
         ### weight vector size is {[4^(len(k-mer)) - len(k-mer)] + 1}
-        self.kmer = 15
+
         kmerSize = ((4**self.kmer) + 1)
         self.w = np.zeros(kmerSize, dtype=float)
         self.trainTotal = 0
@@ -233,7 +235,7 @@ class p_Class():
         ### This isn't working, must not be correct, the training file
         ### has indexes as high as 9,991,917,
         ### changing to 10,000,000 to provide a safety margin
-        self.kmer = 15
+
         kmerSize = ((4**self.kmer) + 1)
         self.w = np.zeros(kmerSize, dtype=float)
         print 'kmerSize: ', kmerSize
@@ -355,7 +357,7 @@ class p_Class():
         A_t_plus = []
 
         # initialize w to zero:
-        self.kmer = 15
+
         kmerSize = ((4**self.kmer) + 1)
         self.w = np.zeros(kmerSize, dtype=float)
         #self.w = np.zeros(100000000, dtype = float)
@@ -447,6 +449,232 @@ class p_Class():
         #print 'trainAccuracy: ', self.trainAccuracy
 
     ### end new pegasosBatch function
+
+    ### pegasosBatchBiasOne function:
+    ### Method one: add one additional feature to the vector,
+    ### it will always be one for xit
+
+    def pegasosBatchBiasOne (self, t):
+        self.trainMistakes = 0
+        self.trainnpr = 0
+        self.traindp = 0
+
+        # create an empty subset, A_t
+        A_t = []
+        # create an empty subset, A_t_plus
+        A_t_plus = []
+
+        # initialize w to zero:
+
+        kmerSize = ((4**self.kmer) + 1)
+        self.biasIndex = kmerSize
+        self.w = np.zeros(kmerSize + 1, dtype=float)
+        ### adding one additional element to the weight vector to be the bias term
+        self.w[self.biasIndex] = 1
+        #self.w = np.zeros(100000000, dtype = float)
+
+
+        ### choose A_t as a proper subset of |m| where |A_t| = k; uniformly at random
+        A_t = []
+        for l in range(self.k):
+            # select record uniformly at random
+            i = random.randint(0, (len(self.trainData) - 1) )
+            A_t.append(self.trainData[i])
+
+        ### set A_t_plus = {i in the set of A_t: yi<w_t, x_i> < 1}
+        A_t_plus = []
+        for record in A_t:
+            ### add the bias term to the vector:
+            record[0].append([self.biasIndex,1])
+            if ( (record[1] * (self.dotProd(record[0]) ) ) < 1 ):
+                A_t_plus.append(record)
+                self.trainMistakes += 1
+            else:
+                self.traindp += 1
+                if record[1] == 1:
+                    self.trainnpr += 1
+
+        # set eta_t = (1/(lambda * t))
+        self.eta = 1 / float(self.lam * (t + 1))
+
+        # set w_t+1 = (1 - eta_t * lambda) * w_t + (eta_t / k) * sum i in the set of A_t+(y_i * x_i)
+
+        ### sum i in the set of A_t+(y_i * x_i):
+
+        ### runxit is a running dictionary of all unique indexes
+        ### and the sums of their weights
+        ### for each record in subset A_t_plus, sum the weights
+        ### for each weight index:
+
+        runxit = {}
+
+        ### record[0] is the array of indexes and weights
+        ### record[1] is the label of the vector, ({+1,-1})
+
+        for record in A_t_plus:
+            ### add the bias term:
+            record[0].append([self.biasIndex,1])
+            ### element[0] is the index of the weight
+            ### element[1] is the weight of the vector at that index
+
+            for element in record[0]:
+                if runxit.get(element[0], '--') == '--':
+                    runxit[element[0]] = element[1] * record[1]
+                else:
+                    runxit[element[0]] += element[1] * record[1]
+
+        ### convert runxit into an array of weight indexes and values:
+
+        wArray = []
+
+        wKeys = runxit.keys()
+        for aKey in wKeys:
+            wArray.append([aKey, runxit.get(aKey)])
+            if self.nonZeroDict.get(aKey, '--') == '--':
+                self.nonZeroDict[aKey] = 1
+
+        ### set w_t+1 = (1 - eta_t * lambda) * w_t + (eta_t / k) * sum i in the set of A_t+(y_i * x_i)
+        ### first, set w_t+1 = (1 - eta_t * lambda) * w_t:
+        ### eta_t * lambda is just 1 / t so no need to use eta or lambda:
+        tScalar = 1.0 - (1.0 / float(t + 1))
+        nonZeroList = self.nonZeroDict.keys()
+        for index in nonZeroList:
+            self.w[index] = self.w[index] * tScalar
+        #self.w = self.w * tScalar
+
+        ### second, update weights of indexes from the sum times eta_t / k:
+        eScalar = self.eta / float(self.k)
+        for element in wArray:
+            self.w[element[0]] += element[1] * eScalar
+
+        ### Optional w_t+1 = min {1, ((1/sqrt(lambda))norm(w_t+1))} * w_t+1:
+        wNorm = LA.norm(self.w)
+        if wNorm != 0:
+            wOpt = 1.0 / float(math.sqrt(self.lam) * wNorm)
+        else:
+            wOpt = 0
+
+        if wOpt < 1:
+            nonZeroList = self.nonZeroDict.keys()
+            for index in nonZeroList:
+                self.w[index] = self.w[index] * wOpt
+            #self.w = self.w * wOpt
+
+        self.trainAccuracy = 100.0 - (100.0 * (self.trainMistakes / float(((t + 1) * self.k))))
+        #print 'trainAccuracy: ', self.trainAccuracy
+
+    ### end new pegasosBatchBiasOne function
+
+    ### pegasosBatchBiasTwo function:
+    ### Method one: add one additional feature to the vector,
+    ### it will always be one for xit
+
+    def pegasosBatchBiasTwo (self, t):
+        self.trainMistakes = 0
+        self.trainnpr = 0
+        self.traindp = 0
+        self.b = -1.0
+
+        # create an empty subset, A_t
+        A_t = []
+        # create an empty subset, A_t_plus
+        A_t_plus = []
+
+        # initialize w to zero:
+
+        kmerSize = ((4**self.kmer) + 1)
+        self.w = np.zeros(kmerSize, dtype=float)
+        #self.w = np.zeros(100000000, dtype = float)
+
+
+        ### choose A_t as a proper subset of |m| where |A_t| = k; uniformly at random
+        A_t = []
+        for l in range(self.k):
+            # select record uniformly at random
+            i = random.randint(0, (len(self.trainData) - 1) )
+            A_t.append(self.trainData[i])
+
+        ### set A_t_plus = {i in the set of A_t: yi<w_t, x_i> < 1}
+        A_t_plus = []
+        for record in A_t:
+            if ( (record[1] * ((self.dotProd(record[0]) ) + self.b) ) < 1 ):
+                A_t_plus.append(record)
+                self.trainMistakes += 1
+            else:
+                self.traindp += 1
+                if record[1] == 1:
+                    self.trainnpr += 1
+
+        # set eta_t = (1/(lambda * t))
+        self.eta = 1 / float(self.lam * (t + 1))
+
+        # set w_t+1 = (1 - eta_t * lambda) * w_t + (eta_t / k) * sum i in the set of A_t+(y_i * x_i)
+
+        ### sum i in the set of A_t+(y_i * x_i):
+
+        ### runxit is a running dictionary of all unique indexes
+        ### and the sums of their weights
+        ### for each record in subset A_t_plus, sum the weights
+        ### for each weight index:
+
+        runxit = {}
+
+        ### record[0] is the array of indexes and weights
+        ### record[1] is the label of the vector, ({+1,-1})
+
+        for record in A_t_plus:
+            ### add the bias term:
+            record[0].append([self.biasIndex,1])
+            ### element[0] is the index of the weight
+            ### element[1] is the weight of the vector at that index
+
+            for element in record[0]:
+                if runxit.get(element[0], '--') == '--':
+                    runxit[element[0]] = element[1] * record[1]
+                else:
+                    runxit[element[0]] += element[1] * record[1]
+
+        ### convert runxit into an array of weight indexes and values:
+
+        wArray = []
+
+        wKeys = runxit.keys()
+        for aKey in wKeys:
+            wArray.append([aKey, runxit.get(aKey)])
+            if self.nonZeroDict.get(aKey, '--') == '--':
+                self.nonZeroDict[aKey] = 1
+
+        ### set w_t+1 = (1 - eta_t * lambda) * w_t + (eta_t / k) * sum i in the set of A_t+(y_i * x_i)
+        ### first, set w_t+1 = (1 - eta_t * lambda) * w_t:
+        ### eta_t * lambda is just 1 / t so no need to use eta or lambda:
+        tScalar = 1.0 - (1.0 / float(t + 1))
+        nonZeroList = self.nonZeroDict.keys()
+        for index in nonZeroList:
+            self.w[index] = self.w[index] * tScalar
+        #self.w = self.w * tScalar
+
+        ### second, update weights of indexes from the sum times eta_t / k:
+        eScalar = self.eta / float(self.k)
+        for element in wArray:
+            self.w[element[0]] += element[1] * eScalar
+
+        ### Optional w_t+1 = min {1, ((1/sqrt(lambda))norm(w_t+1))} * w_t+1:
+        wNorm = LA.norm(self.w)
+        if wNorm != 0:
+            wOpt = 1.0 / float(math.sqrt(self.lam) * wNorm)
+        else:
+            wOpt = 0
+
+        if wOpt < 1:
+            nonZeroList = self.nonZeroDict.keys()
+            for index in nonZeroList:
+                self.w[index] = self.w[index] * wOpt
+            #self.w = self.w * wOpt
+
+        self.trainAccuracy = 100.0 - (100.0 * (self.trainMistakes / float(((t + 1) * self.k))))
+        #print 'trainAccuracy: ', self.trainAccuracy
+
+    ### end new pegasosBatchBiasTwo function
 
     ### new pegasos function, pegasosConverge,
     ### This is for testing how fast each

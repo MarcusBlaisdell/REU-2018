@@ -8,13 +8,13 @@ from p_Class import *
 
 myClass = p_Class()
 
-myClass.loadData("/home/marcus/Data/Genomic-Data/training_Set-3", myClass.trainData)
+myClass.loadData("/home/marcus/Data/Genomic-Data/training_Set-1", myClass.trainData)
 #myClass.loadData("/home/marcus/Data/Genomic-Data/shortEDL-validation.txt", myClass.validationData)
-myClass.loadData("/home/marcus/Data/Genomic-Data/testing_Set-3", myClass.testData)
+myClass.loadData("/home/marcus/Data/Genomic-Data/testing_Set-1", myClass.testData)
 myClass.countGood()
 
 ### open the results file:
-outFile = open("/home/marcus/Documents/LinuxShare/Results/Pegasos/results_Set-3.csv", "w")
+outFile = open("/home/marcus/Documents/LinuxShare/Results/Pegasos/results_Set-1-bias-Two-b.csv", "w")
 
 ### Add a header:
 outFile.write('type' + ',' + 'Precision' + ',' + 'Recall' + ',' + 'F1' + ',' + \
@@ -31,15 +31,17 @@ for i in myClass.Tlist:
     for j in myClass.klist:
         myClass.k = j
 
+        '''
         # initialize weight vector, w to zero:
-        myClass.kmer = 15
+
         kmerSize = ((4**myClass.kmer) + 1)
         myClass.w = np.zeros(kmerSize, dtype=float)
         #myClass.w = np.zeros(10000000, dtype = float)
+        '''
 
         ### repeat for T iterations:
         for t in range(myClass.T):
-            myClass.pegasosBatch(t)
+            myClass.pegasosBatchBiasTwo(t)
 
             outFile.write('train' + ',' + str(myClass.trainPrecision) + ',' + str(myClass.trainRecall) \
                           + ',' + str(myClass.trainF1) + ',' + str(myClass.trainAccuracy)\
@@ -99,6 +101,7 @@ for i in myClass.Tlist:
 '''
 endTime = time.time()
 print 'runTime: ', endTime - startTime
+print 'bias: ', myClass.b
 
 outFile.close()
 
