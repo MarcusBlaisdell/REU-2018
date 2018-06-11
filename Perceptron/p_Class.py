@@ -21,7 +21,7 @@ class p_Class():
     #klist = [1, 5, 10]
     klist = [1]
     w = np.array([]) # weight is an numpy array
-    b = 25.0 # bias term
+    b = 0.0 # bias term
     eta = 1.0 # eta is learning rate
     lam = 1e-1 # regularization parameter
     trainMistakes = 0
@@ -487,7 +487,7 @@ class p_Class():
             self.w[element[0]] += self.eta * self.lam * yStar * element[1]
 
         ### update the bias term:
-        #self.b = self.b + yStar
+        #self.b = self.b +  100 * yStar
 
         #endTime = time.time()
         #print 'updateWeight: ', endTime - startTime

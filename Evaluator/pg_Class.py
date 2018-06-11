@@ -6,8 +6,6 @@
 
 import random
 import time
-import numpy as np
-from numpy import linalg as LA
 import math
 
 ### create a class for pegasos:
@@ -27,7 +25,7 @@ class pg_Class():
     Tlist = [100]
     #klist = [1, 5, 10]
     klist = [1000, 2000, 5000, 10000]
-    w = np.array([]) # weight is a numpy array
+    w = {} # weight is a dictionary
     eta = 0.0 # eta is calculated for each iteration
     trainMistakes = 0
     trainTotal = 0
@@ -69,17 +67,9 @@ class pg_Class():
         self.trainnpr = 0
         self.traindp = 0
         self.trainTotal = self.T*self.k
-        xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
+        xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
-
-        ### initialize weight vector:
-        #self.w = np.zeros(len(self.trainData[0][0]), dtype=float)
-        ### weight vector size is {[4^(len(k-mer)) - len(k-mer)] + 1}
-
-        kmerSize = ((4**self.kmer) + 1)
-        self.w = np.zeros(kmerSize, dtype=float)
-        self.trainTotal = 0
 
         ### repeat for T iterations:
         for t in range(self.T):
@@ -89,7 +79,7 @@ class pg_Class():
             i = random.randint(0,len(self.trainData) - self.k - 1)
 
             self.trainTotal += 1
-            xit = np.array(self.trainData[i][0])
+            xit = self.trainData[i][0]
             yit = self.trainData[i][1]
             ### set eta = 1.0 / (lambda * t)
             ### (use t + 1 since the first iteration is t = 0)
@@ -167,9 +157,6 @@ class pg_Class():
 
         # initialize w to zero:
 
-        kmerSize = ((4**self.kmer) + 1)
-        self.w = np.zeros(kmerSize, dtype=float)
-
         ### choose A_t as a proper subset of |m| where |A_t| = k; uniformly at random
         A_t = []
         for l in range(self.k):
@@ -212,6 +199,7 @@ class pg_Class():
             for element in record[0]:
                 if runxit.get(element[0], '--') == '--':
                     runxit[element[0]] = element[1] * record[1]
+                    self.w[element[0]] = 0
                 else:
                     runxit[element[0]] += element[1] * record[1]
 
@@ -240,7 +228,8 @@ class pg_Class():
             self.w[element[0]] += element[1] * eScalar
 
         ### Optional w_t+1 = min {1, ((1/sqrt(lambda))norm(w_t+1))} * w_t+1:
-        wNorm = LA.norm(self.w)
+        #wNorm = LA.norm(self.w)
+        wNorm = self.norm()
         if wNorm != 0:
             wOpt = 1.0 / float(math.sqrt(self.lam) * wNorm)
         else:
@@ -265,13 +254,13 @@ class pg_Class():
         self.testnpr = 0
         self.testdp = 0
         self.testTotal = len(self.testData)
-        xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
+        xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
 
         ### evaluate all test samples:
         for i in range(len(self.testData)):
-            xit = np.array(self.testData[i][0])
+            xit = self.testData[i][0]
             yit = self.testData[i][1]
 
             ### make the prediction:
@@ -335,7 +324,8 @@ class pg_Class():
         ### xArray is a sparse vector, anything that is not in it will be zero,
         ### so only sum the products of indexes from w that exist in xArray
         for element in xArray:
-            result += self.w[element[0]] * element[1]
+            if self.w.get(element[0], '--') != '--':
+                result += self.w[element[0]] * element[1]
 
         #endTime = time.time()
         #print 'dotProd2: ', endTime - startTime
@@ -350,19 +340,11 @@ class pg_Class():
         #startTime = time.time()
         tScalar = 1 - tnew
         wOpt = 0.0
-        wNorm = LA.norm(self.w)
+        #wNorm = LA.norm(self.w)
+        wNorm = self.norm()
         wOpt = wNorm / math.sqrt(self.lam)
         if wOpt > 1 or math.isnan(wOpt) or math.isinf(wOpt):
             wOpt = 1
-
-        ### This updates the entire feature vector:
-        #self.w = tScalar * self.w
-
-        '''
-        ### This takes four times as long
-        for index in np.nonzero(self.w):
-            self.w[index] = self.w[index] * tScalar
-        '''
 
         ### This only processes non-zero features:
         keyList = self.nonZeroDict.keys()
@@ -379,6 +361,7 @@ class pg_Class():
             if self.w[element[0]] != 0:
                 if self.nonZeroDict.get(element[0], '-') == '-':
                     self.nonZeroDict[element[0]] = 1
+                    self.w[element[0]] = 0
             ### if the weight value at that index has become a zero,
             ### delete it from the non-zero list
             else:
@@ -422,6 +405,7 @@ class pg_Class():
             if self.w[element[0]] != 0:
                 if self.nonZeroDict.get(element[0], '-') == '-':
                     self.nonZeroDict[element[0]] = 1
+                    self.w[element[0]] = 0
             ### if the weight value at that index has become a zero,
             ### delete it from the non-zero list
             else:
@@ -447,3 +431,11 @@ class pg_Class():
         #print 'updateWeight: ', endTime - startTime
 
     ### end updateWeightBatch function
+
+    ### norm function:
+    def norm(self):
+        runSum = 0.0
+        wIndex = self.w.keys()
+        for i in wIndex:
+            runSum += self.w.get(i)**2
+        return math.sqrt(runSum)

@@ -24,9 +24,9 @@ class p_Class():
     #lamList = [1e-5, 2e-5, 3e-5, 4e-5, 5e-5]
     lamList = [1e-3]
     #Tlist = [5, 10, 100, 1000, 5000, 10000]
-    Tlist = [100]
+    Tlist = [5, 10, 100, 1000]
     #klist = [1, 5, 10]
-    klist = [2000]
+    klist = [50]
     w = np.array([]) # weight is a numpy array
     b = 0.0 # bias term
     biasIndex = 0

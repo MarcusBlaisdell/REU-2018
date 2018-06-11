@@ -8,13 +8,13 @@ from p_Class import *
 
 myClass = p_Class()
 
-myClass.loadData("/home/marcus/Data/Genomic-Data/training_Set-1", myClass.trainData)
+myClass.loadData("/home/marcus/Data/Genomic-Data/train-11", myClass.trainData)
 #myClass.loadData("/home/marcus/Data/Genomic-Data/shortEDL-validation.txt", myClass.validationData)
-myClass.loadData("/home/marcus/Data/Genomic-Data/testing_Set-1", myClass.testData)
+myClass.loadData("/home/marcus/Data/Genomic-Data/test-11", myClass.testData)
 myClass.countGood()
 
 ### open the results file:
-outFile = open("/home/marcus/Documents/LinuxShare/Results/Pegasos/results_Set-1-bias-Two-b.csv", "w")
+outFile = open("/home/marcus/Documents/LinuxShare/Results/Pegasos/results_variables-T.csv", "w")
 
 ### Add a header:
 outFile.write('type' + ',' + 'Precision' + ',' + 'Recall' + ',' + 'F1' + ',' + \
@@ -30,29 +30,31 @@ for i in myClass.Tlist:
     ### run for each value of k:
     for j in myClass.klist:
         myClass.k = j
+        for l in myClass.lamList:
+            myClass.lam = l
 
-        '''
-        # initialize weight vector, w to zero:
+            '''
+            # initialize weight vector, w to zero:
 
-        kmerSize = ((4**myClass.kmer) + 1)
-        myClass.w = np.zeros(kmerSize, dtype=float)
-        #myClass.w = np.zeros(10000000, dtype = float)
-        '''
+            kmerSize = ((4**myClass.kmer) + 1)
+            myClass.w = np.zeros(kmerSize, dtype=float)
+            #myClass.w = np.zeros(10000000, dtype = float)
+            '''
 
-        ### repeat for T iterations:
-        for t in range(myClass.T):
-            myClass.pegasosBatchBiasTwo(t)
+            ### repeat for T iterations:
+            for t in range(myClass.T):
+                myClass.pegasosBatchBiasTwo(t)
 
-            outFile.write('train' + ',' + str(myClass.trainPrecision) + ',' + str(myClass.trainRecall) \
-                          + ',' + str(myClass.trainF1) + ',' + str(myClass.trainAccuracy)\
-                          + ',' + str(myClass.T) + ',' + str(myClass.k) + ',' \
-                          + str(myClass.lam) + ',' + str(myClass.trainMistakes) + ',' + str(t + 1) + '\n')
+                outFile.write('train' + ',' + str(myClass.trainPrecision) + ',' + str(myClass.trainRecall) \
+                              + ',' + str(myClass.trainF1) + ',' + str(myClass.trainAccuracy)\
+                              + ',' + str(myClass.T) + ',' + str(myClass.k) + ',' \
+                              + str(myClass.lam) + ',' + str(myClass.trainMistakes) + ',' + str(t + 1) + '\n')
 
-            myClass.testWeight()
-            outFile.write('test' + ',' + str(myClass.testPrecision) + ',' + str(myClass.testRecall) \
-                          + ',' + str(myClass.testF1) + ',' + str(myClass.testAccuracy)\
-                          + ',' + str(myClass.T) + ',' + str(myClass.k) + ',' \
-                          + str(myClass.lam) + ',' + str(myClass.testMistakes) + '\n')
+                myClass.testWeight()
+                outFile.write('test' + ',' + str(myClass.testPrecision) + ',' + str(myClass.testRecall) \
+                              + ',' + str(myClass.testF1) + ',' + str(myClass.testAccuracy)\
+                              + ',' + str(myClass.T) + ',' + str(myClass.k) + ',' \
+                              + str(myClass.lam) + ',' + str(myClass.testMistakes) + '\n')
 
 '''
 for i in myClass.Tlist:
@@ -101,7 +103,8 @@ for i in myClass.Tlist:
 '''
 endTime = time.time()
 print 'runTime: ', endTime - startTime
-print 'bias: ', myClass.b
+outFile.write (str(endTime - startTime) + '\n')
+#print 'bias: ', myClass.b
 
 outFile.close()
 

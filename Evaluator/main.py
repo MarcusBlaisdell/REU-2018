@@ -13,14 +13,15 @@ myPRClass = pr_Class()
 
 ### create array of the values to label the training, testing, results files:
 
-kmerList = [11, 13, 15, 17]
-subList = ['a', 'b', 'c', 'd']
+kmerList = [17]
+#subList = ['a', 'b', 'c', 'd']
+subList = ['a']
 
 ### run the comparison for each training/testing set:
 
 thePath = "/home/marcus/Data/Genomic-Data/Testing/"
 #thePath = "/data/doppa/users/mblaisdell/genome-assembly-datasets/Testing/"
-resultsStringPre = "results_"
+resultsStringPre = "/home/marcus/Documents/LinuxShare/Results/results_"
 resultsStringPost = ".csv"
 
 ### create empty status file:
@@ -104,12 +105,6 @@ for kmer in kmerList:
                 myPGClass.k = j
                 for l in myPGClass.lamList:
                     myPGClass.lam = l
-
-                    # initialize weight vector, w to zero:
-
-                    kmerSize = ((4**myPGClass.kmer) + 1)
-                    myPGClass.w = np.zeros(kmerSize, dtype=float)
-                    #myPGClass.w = np.zeros(10000000, dtype = float)
 
                     ### repeat for T iterations:
                     for t in range(myPGClass.T):

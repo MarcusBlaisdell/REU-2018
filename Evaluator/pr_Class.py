@@ -6,7 +6,6 @@
 
 import random
 import time
-import numpy as np
 
 class pr_Class():
     ### global variables:
@@ -20,7 +19,7 @@ class pr_Class():
     Tlist = [20]
     #klist = [1, 5, 10]
     klist = [1]
-    w = np.array([]) # weight is an numpy array
+    w = {} # weight is a dictionary
     eta = 1.0 # eta is learning rate
     trainMistakes = 0
     trainTotal = 0
@@ -57,17 +56,9 @@ class pr_Class():
 
     def perceptron(self, outFile):
         self.trainTotal = len(self.trainData)
-        xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
+        xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
-
-        ### initialize weight vector:
-        #self.w = np.zeros(len(self.trainData[0][0]), dtype=float)
-        ### weight vector size is {[4^(len(k-mer)) - len(k-mer)] + 1}
-
-        kmerSize = ((4**self.kmer) + 1)
-        self.w = np.zeros(kmerSize, dtype=float)
-        #self.w = np.zeros(10000000, dtype=float)
 
         ### repeat for T iterations:
         for t in range(self.T):
@@ -77,7 +68,7 @@ class pr_Class():
             self.traindp = 0
             #print 'Iteration: ', t
             for l in range (len(self.trainData)):
-                xit = np.array(self.trainData[l][0])
+                xit = self.trainData[l][0]
                 yit = self.trainData[l][1]
 
                 ### make the prediction: yHat = y*(<w,x>)
@@ -150,17 +141,16 @@ class pr_Class():
         self.validationnpr = 0
         self.validationdp = 0
         self.validationTotal = len(self.validationData)
-        xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
+        xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
 
         ### evaluate all test samples:
         for i in range(len(self.validationData)):
-            xit = np.array(self.validationData[i][0])
+            xit = self.validationData[i][0]
             yit = self.validationData[i][1]
 
             ### make the prediction:
-            #yHat = yit * np.dot(self.w, xit)
             yHat = yit * self.dotProd(xit)
 
             ###
@@ -211,17 +201,16 @@ class pr_Class():
         self.testnpr = 0
         self.testdp = 0
         self.testTotal = len(self.testData)
-        xit = np.array([]) # x-sub-i-sub-t, the training vector for the current iterations
+        xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
 
         ### evaluate all test samples:
         for i in range(len(self.testData)):
-            xit = np.array(self.testData[i][0])
+            xit = self.testData[i][0]
             yit = self.testData[i][1]
 
             ### make the prediction:
-            #yHat = yit * np.dot(self.w, xit)
             yHat = yit * self.dotProd(xit)
 
             ### if the value is actually good,
@@ -287,7 +276,10 @@ class pr_Class():
         result = 0.0
 
         for element in xArray:
-            result += self.w[element[0]] * element[1]
+            if self.w.get(element[0], '--') == '--':
+                self.w[element[0]] = 0
+            else:
+                result += self.w[element[0]] * element[1]
 
         #endTime = time.time()
         #print 'dotProd2: ', endTime - startTime
