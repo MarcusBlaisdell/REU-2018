@@ -54,8 +54,8 @@ class pr_Class():
 
     ### perceptron function:
 
-    def perceptron(self, outFile):
-        self.trainTotal = len(self.trainData)
+    def perceptron(self, trainDataSet, testDataSet, outFile):
+        self.trainTotal = len(trainDataSet)
         xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
@@ -67,9 +67,9 @@ class pr_Class():
             self.trainnpr = 0
             self.traindp = 0
             #print 'Iteration: ', t
-            for l in range (len(self.trainData)):
-                xit = self.trainData[l][0]
-                yit = self.trainData[l][1]
+            for l in range (len(trainDataSet)):
+                xit = trainDataSet[l][0]
+                yit = trainDataSet[l][1]
 
                 ### make the prediction: yHat = y*(<w,x>)
                 yHat = yit * self.dotProd(xit)
@@ -127,7 +127,7 @@ class pr_Class():
                           + str(self.trainMistakes) + ',' + str(t + 1) + '\n')
 
             #self.validationWeight(outFile, t)
-            self.testWeight(outFile, t)
+            self.testWeight(trainDataSet, testDataSet, outFile, t)
 
         ### end iteration loop
 
@@ -195,20 +195,20 @@ class pr_Class():
 
     ### use new weight to test accuracy on test dataList
 
-    def testWeight (self, outFile, t):
+    def testWeight (self, trainDataSet, testDataSet, outFile, t):
         # reset mistakes count so each iteration starts at 0
         self.testMistakes = 0
         self.testnpr = 0
         self.testdp = 0
-        self.testTotal = len(self.testData)
+        self.testTotal = len(testDataSet)
         xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
 
         ### evaluate all test samples:
-        for i in range(len(self.testData)):
-            xit = self.testData[i][0]
-            yit = self.testData[i][1]
+        for i in range(len(testDataSet)):
+            xit = testDataSet[i][0]
+            yit = testDataSet[i][1]
 
             ### make the prediction:
             yHat = yit * self.dotProd(xit)
@@ -255,17 +255,17 @@ class pr_Class():
 
     ### get the count of the total number of train / test samples
     ### that are actually good:
-    def countGood (self):
-        for i in range(len(self.trainData)):
-            if self.trainData[i][1] == 1:
+    def countGood (self, trainDataSet, testDataSet):
+        for i in range(len(trainDataSet)):
+            if trainDataSet[i][1] == 1:
                 self.trainGood += 1
 
         for i in range(len(self.validationData)):
             if self.validationData[i][1] == 1:
                 self.validationGood += 1
 
-        for i in range(len(self.testData)):
-            if self.testData[i][1] == 1:
+        for i in range(len(testDataSet)):
+            if testDataSet[i][1] == 1:
                 self.testGood += 1
 
     ### end countGood function

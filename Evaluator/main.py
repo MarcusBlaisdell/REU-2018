@@ -8,12 +8,10 @@ from pg_Class import *
 from pr_Class import *
 from functions import *
 
-myPGClass = pg_Class()
-myPRClass = pr_Class()
-
 ### create array of the values to label the training, testing, results files:
 
-kmerList = [17]
+kmerList = [11, 13, 15, 17]
+#kmerList = [17]
 #subList = ['a', 'b', 'c', 'd']
 subList = ['a']
 
@@ -29,6 +27,13 @@ statusFile = open("status.txt", "w")
 statusFile.close()
 
 for kmer in kmerList:
+    myPGClass = pg_Class()
+    myPRClass = pr_Class()
+
+    ### The datasets are the same for each function, create them once to save memmory:
+    trainDataSet = []
+    testDataSet = []
+
     myPGClass.kmer = kmer
     myPRClass.kmer = kmer
     for letter in subList:
@@ -41,17 +46,22 @@ for kmer in kmerList:
         print 'set: ', str(kmer) + letter
         statusFile.write('set: ' + str(str(kmer) + letter) + '\n')
 
-        print 'loading data for perceptron:'
-        statusFile.write ('loading data for perceptron:' + '\n')
-        loadData(trainData, myPRClass.trainData)
-        loadData(testData, myPRClass.testData)
+        print 'loading data:'
+        statusFile.write ('loading data:' + '\n')
+        
+        trainDataSet = []
+        testDataSet = []
+
+        loadData(trainData, trainDataSet)
+        loadData(testData, testDataSet)
         print 'load complete'
         statusFile.write ('load complete' + '\n')
-        myPRClass.countGood()
 
         print 'opening results file:'
         statusFile.write ('opening results file:' + '\n')
         outFile = open(resultsFile, "w")
+
+        myPRClass.countGood(trainDataSet, testDataSet)
 
         outFile.write ('Perceptron'  + '\n' + '\n')
         outFile.write('type' + ',' + 'Precision' + ',' + 'Recall' + ',' + 'F1' + ',' + \
@@ -63,7 +73,7 @@ for kmer in kmerList:
         statusFile.close()
 
         startTime = time.time()
-        myPRClass.perceptron(outFile)
+        myPRClass.perceptron(trainDataSet, testDataSet, outFile)
         endTime = time.time()
         print 'Perceptron runTime: ', endTime - startTime
         outFile.write (str(endTime - startTime))
@@ -72,16 +82,7 @@ for kmer in kmerList:
 
         ### end test perceptron
 
-        print 'loading data for Pegasos . . . '
-        statusFile.write ('loading data for Pegasos . . . ' + '\n')
-
-        loadData(trainData, myPGClass.trainData)
-        loadData(testData, myPGClass.testData)
-
-        print 'load complete'
-        statusFile.write ('load complete' + '\n')
-
-        myPGClass.countGood()
+        myPGClass.countGood(trainDataSet, testDataSet)
 
 
         ### Add a header for Pegasos:
@@ -108,14 +109,14 @@ for kmer in kmerList:
 
                     ### repeat for T iterations:
                     for t in range(myPGClass.T):
-                        myPGClass.pegasosBatch(t)
+                        myPGClass.pegasosBatch(trainDataSet, testDataSet, t)
 
                         outFile.write('train' + ',' + str(myPGClass.trainPrecision) + ',' + str(myPGClass.trainRecall) \
                                       + ',' + str(myPGClass.trainF1) + ',' + str(myPGClass.trainAccuracy)\
                                       + ',' + str(myPGClass.T) + ',' + str(myPGClass.k) + ',' \
                                       + str(myPGClass.lam) + ',' + str(myPGClass.trainMistakes) + ',' + str(t + 1) + '\n')
 
-                        myPGClass.testWeight()
+                        myPGClass.testWeight(trainDataSet, testDataSet)
                         outFile.write('test' + ',' + str(myPGClass.testPrecision) + ',' + str(myPGClass.testRecall) \
                                       + ',' + str(myPGClass.testF1) + ',' + str(myPGClass.testAccuracy)\
                                       + ',' + str(myPGClass.T) + ',' + str(myPGClass.k) + ',' \

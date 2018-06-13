@@ -61,7 +61,7 @@ class pg_Class():
 
     ### pegasos function:
 
-    def pegasos(self):
+    def pegasos(self, trainDataSet, testDataSet):
         # reset global mistake count so each iteration starts from zero
         self.trainMistakes = 0
         self.trainnpr = 0
@@ -76,11 +76,11 @@ class pg_Class():
             ### Chose a subset from set trainData, uniformly at random
             ### the subset is contiguous, it is chosen at random from
             ### all subsets of S
-            i = random.randint(0,len(self.trainData) - self.k - 1)
+            i = random.randint(0,len(trainDataSet) - self.k - 1)
 
             self.trainTotal += 1
-            xit = self.trainData[i][0]
-            yit = self.trainData[i][1]
+            xit = trainDataSet[i][0]
+            yit = trainDataSet[i][1]
             ### set eta = 1.0 / (lambda * t)
             ### (use t + 1 since the first iteration is t = 0)
             self.eta = 1.0 / (self.lam * (t + 1))
@@ -145,7 +145,7 @@ class pg_Class():
 
     '''
 
-    def pegasosBatch (self, t):
+    def pegasosBatch (self, trainDataSet, testDataSet,  t):
         self.trainMistakes = 0
         self.trainnpr = 0
         self.traindp = 0
@@ -161,8 +161,8 @@ class pg_Class():
         A_t = []
         for l in range(self.k):
             # select record uniformly at random
-            i = random.randint(0, (len(self.trainData) - 1) )
-            A_t.append(self.trainData[i])
+            i = random.randint(0, (len(trainDataSet) - 1) )
+            A_t.append(trainDataSet[i])
 
         ### set A_t_plus = {i in the set of A_t: yi<w_t, x_i> < 1}
         A_t_plus = []
@@ -248,20 +248,20 @@ class pg_Class():
 
     ### use new weight to test accuracy on test dataList
 
-    def testWeight (self):
+    def testWeight (self, trainDataSet, testDataSet):
         # reset mistakes count so each iteration starts at 0
         self.testMistakes = 0
         self.testnpr = 0
         self.testdp = 0
-        self.testTotal = len(self.testData)
+        self.testTotal = len(testDataSet)
         xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
 
         ### evaluate all test samples:
-        for i in range(len(self.testData)):
-            xit = self.testData[i][0]
-            yit = self.testData[i][1]
+        for i in range(len(testDataSet)):
+            xit = testDataSet[i][0]
+            yit = testDataSet[i][1]
 
             ### make the prediction:
             yHat = yit * self.dotProd(xit)
@@ -299,17 +299,17 @@ class pg_Class():
 
     ### get the count of the total number of train / test samples
     ### that are actually good:
-    def countGood (self):
-        for i in range(len(self.trainData)):
-            if self.trainData[i][1] == 1:
+    def countGood (self, trainDataSet, testDataSet):
+        for i in range(len(trainDataSet)):
+            if trainDataSet[i][1] == 1:
                 self.trainGood += 1
 
         for i in range(len(self.validationData)):
             if self.validationData[i][1] == 1:
                 self.validationGood += 1
 
-        for i in range(len(self.testData)):
-            if self.testData[i][1] == 1:
+        for i in range(len(testDataSet)):
+            if testDataSet[i][1] == 1:
                 self.testGood += 1
 
     ### end countGood function
