@@ -82,10 +82,6 @@ class pg_Class():
             self.trainTotal += 1
             xit = trainDataSet[i][0]
             yit = trainDataSet[i][1]
-
-            if yit == 1:
-                self.trainGood += 1
-
             ### set eta = 1.0 / (lambda * t)
             ### (use t + 1 since the first iteration is t = 0)
             self.eta = 1.0 / (self.lam * (t + 1))
@@ -253,7 +249,7 @@ class pg_Class():
 
     ### use new weight to test accuracy on test dataList
 
-    def testWeight (self, trainDataSet, testDataSet):
+    def testWeight (self, testDataSet):
         # reset mistakes count so each iteration starts at 0
         self.testMistakes = 0
         self.testnpr = 0
@@ -263,22 +259,14 @@ class pg_Class():
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
 
-        aVal = 0
-        bVal = 0
-        cVal = 0
-        dVal = 0
         ### evaluate all test samples:
         for i in range(len(testDataSet)):
             xit = testDataSet[i][0]
             yit = testDataSet[i][1]
 
             ### make the prediction:
-            #yHat = yit * self.dotProdTest(xit)
-            yHat = sign(yit * self.dotProd(xit))
-            #print 'self.dotProdTest(xit): ', self.dotProdTest(xit), ' :'
-            #print 'yit * self.dotProdTest(xit)', yit * self.dotProdTest(xit)
-            #print 'yHat: ', yHat, 'yit: ', yit
-
+            yHat = yit * self.dotProd(xit)
+            #yHat = sign(yit * self.dotProd(xit))
 
             ### if the value is actually good,
             ### and we predicted good, increment npr
@@ -288,7 +276,7 @@ class pg_Class():
                     self.testnpr += 1
                 else:
                     self.testMistakes += 1
-            else: #if yit == -1:
+            if yit == -1:
                 if yHat >= 1:
                     self.testMistakes += 1
 
@@ -331,41 +319,21 @@ class pg_Class():
     ### function dotProd(), dot product by index
     def dotProd(self, xArray):
         #startTime = time.time()
-        runSum = 0.0
+        theResult = 0.0
 
         ### xArray format is [[w[index],value],...]
         ### xArray is a sparse vector, anything that is not in it will be zero,
         ### so only sum the products of indexes from w that exist in xArray
         for element in xArray:
             if self.w.get(element[0], '--') != '--':
-                runSum += self.w[element[0]] * element[1]
+                theResult += self.w[element[0]] * element[1]
 
         #endTime = time.time()
         #print 'dotProd2: ', endTime - startTime
 
-        return runSum
+        return theResult
 
     ### end dotProd() function
-
-    ### function dotProdTest(), dot product by index
-    def dotProdTest(self, xArray):
-        #startTime = time.time()
-        result = 0.0
-
-        ### xArray format is [[w[index],value],...]
-        ### xArray is a sparse vector, anything that is not in it will be zero,
-        ### so only sum the products of indexes from w that exist in xArray
-        for element in xArray:
-            if self.w.get(element[0], '--') != '--':
-                result += self.w[element[0]] * element[1]
-
-        #endTime = time.time()
-        #print 'dotProd2: ', endTime - startTime
-
-        #print 'result: ', result
-        return result
-
-    ### end dotProdTest() function
 
     ### updateWeight function:
 
