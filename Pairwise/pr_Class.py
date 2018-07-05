@@ -1,5 +1,5 @@
 ##########################################
-### Perceptron Test
+###  Test
 ### class
 ### Marcus Blaisdell
 ##########################################
@@ -92,9 +92,10 @@ class pr_Class():
             else:
                 if yHat > 0:
                     #print yit, ' : ', yHat
-                    self.traindp += 1
                     self.trainMistakes += 1
                     self.updateWeight(xit, yit)
+                else:
+                    self.traindp += 1
 
             ### end train loop, trains on each sample in trainData
 
@@ -136,9 +137,8 @@ class pr_Class():
                 else:
                     self.testMistakes += 1
             if yit == -1:
-                if yHat <= 0:
+                if yHat > 0:
                     self.testMistakes += 1
-                    self.testdp += 1
 
     ### end testWeight function
 

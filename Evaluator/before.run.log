@@ -1,0 +1,136 @@
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:*** program complete ***
+
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:*** program complete ***
+
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:train,0.575027382256,0.749286393911,0.650692005784,83.09,1,1,0,1691,1
+
+INFO:root:train,0.759190417183,0.874405328259,0.812734910458,91.53,1,1,0,1694,1
+
+INFO:root:train,0.832085253456,0.916270218839,0.872150943396,94.3533333333,1,1,0,1694,1
+
+INFO:root:training Complete
+INFO:root:test,1.0,1.0,1.0,100.0,1,1,0,0,1
+
+INFO:root:Perceptron runTime: 3.28889393806
+
+INFO:root:closing output file . . .
+
+INFO:root:*** program complete ***
+
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:train,0.575027382256,0.749286393911,0.650692005784,83.09,1,1,0,1691,1
+
+INFO:root:train,0.759190417183,0.874405328259,0.812734910458,91.53,1,1,0,1694,1
+
+INFO:root:train,0.832085253456,0.916270218839,0.872150943396,94.3533333333,1,1,0,1694,1
+
+INFO:root:training Complete
+INFO:root:test,1.0,1.0,1.0,100.0,1,1,0,0,1
+
+INFO:root:Perceptron runTime: 2.84951901436
+
+INFO:root:closing output file . . .
+
+INFO:root:*** program complete ***
+
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:train,0.575027382256,0.749286393911,0.650692005784,83.09,1,1,0,1691,1
+
+INFO:root:train,0.759190417183,0.874405328259,0.812734910458,91.53,1,1,0,1694,1
+
+INFO:root:train,0.832085253456,0.916270218839,0.872150943396,94.3533333333,1,1,0,1694,1
+
+INFO:root:training Complete
+INFO:root:test,1.0,1.0,1.0,100.0,1,1,0,0,1
+
+INFO:root:Perceptron runTime: 3.03379106522
+
+INFO:root:closing output file . . .
+
+INFO:root:*** program complete ***
+
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:*** program complete ***
+
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running perceptron . . . 
+
+INFO:root:train,0.575027382256,0.749286393911,0.650692005784,83.09,1,1,0,1691,1
+
+INFO:root:train,0.759190417183,0.874405328259,0.812734910458,91.53,1,1,0,1694,1
+
+INFO:root:train,0.832085253456,0.916270218839,0.872150943396,94.3533333333,1,1,0,1694,1
+
+INFO:root:training Complete
+INFO:root:test,1.0,1.0,1.0,100.0,1,1,0,0,1
+
+INFO:root:Perceptron runTime: 2.82714605331
+
+INFO:root:closing output file . . .
+
+INFO:root:*** program complete ***
+
