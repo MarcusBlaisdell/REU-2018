@@ -253,7 +253,8 @@ def readData (dataName, maxReadSize, readFile):
 
 ### Read one gene and process it through the requested function:
 
-def readGene (thePath, gene, kmer, maxReadSize, functionName, myPRClass, t):
+def readGene (thePath, gene, kmer, maxReadSize, functionName, myClass, t, logging):
+    logging.info ('readGene called' + '\n')
     fileName = thePath + gene + '-' + str(kmer)
     #print fileName
     readFile = open (fileName, 'r')
@@ -262,9 +263,9 @@ def readGene (thePath, gene, kmer, maxReadSize, functionName, myPRClass, t):
         runningList = []
         readFlag = readData (runningList, maxReadSize, readFile)
         if functionName == 'perceptron':
-            myPRClass.perceptron (runningList)
+            myClass.perceptron (runningList)
         if functionName == 'testWeight':
-            myPRClass.testWeight (runningList, t)
+            myClass.testWeight (runningList, t)
 
     readFile.close()
 

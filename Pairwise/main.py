@@ -18,9 +18,10 @@ import time
 ### create array of the values to label the training, testing, results files:
 
 #geneList = ['0157', '2016C', 'CH611', 'Co6114', 'ED1a', 'EDL933-1', 'FAP1', '_isolate102', 'RS76', 'UMN026']
-geneList = ['2016C', 'CH611', 'Co6114']
-#geneList = ['2016C']
+#geneList = ['2016C', 'CH611', 'Co6114']
+geneList = ['2016C']
 geneTest = '0157'
+#geneTest = '2016C'
 #kmerList = [11, 13, 15, 17]
 kmerList = [11]
 #subList = ['a', 'b', 'c', 'd']
@@ -29,7 +30,7 @@ subList = ['a']
 biasVariableList = [0]
 
 maxReadSize = 500000
-sampleSizeK = 10
+sampleSizeK = 1000
 
 ### run the comparison for each training/testing set:
 
@@ -95,8 +96,6 @@ def individualProcess(kmer, letter):
                 ### report results of training
 
                 myPWClass.trainAccuracy = 100 - (100 * (myPWClass.trainMistakes / float(myPWClass.trainTotal)) )
-                #print 'trainMistakes = ', myPWClass.trainMistakes, '   : train success = ', \
-                      #myPWClass.trainAccuracy, '%'
                 if myPWClass.traindp > 0:
                     myPWClass.trainPrecision = myPWClass.trainnpr / float(myPWClass.traindp)
                 if myPWClass.trainGood > 0:
@@ -150,9 +149,33 @@ def individualProcess(kmer, letter):
 
             myPWClass.saveWeight()
 
-            readGene (thePath, geneTest, kmer, maxReadSize, "testWeight", myPRClass, t)
+            readGene (thePath, geneTest, kmer, maxReadSize, "testWeight", myPWClass, t, logging)
             ### report results of testing
 
+            myPWClass.testAccuracy = 100 - (100 * (myPWClass.testMistakes / float(myPWClass.testTotal)) )
+            #print 'testMistakes = ', myPWClass.testMistakes, '   : test success = ', \
+                  #myPWClass.testAccuracy, '%'
+
+            if myPWClass.testdp > 0:
+                myPWClass.testPrecision = myPWClass.testnpr / float(myPWClass.testdp)
+            myPWClass.testRecall = myPWClass.testnpr / float(myPWClass.testGood)
+            #print 'testPrecision: ', myPWClass.testPrecision
+            #print 'testRecall: ', myPWClass.testRecall
+            if (myPWClass.testPrecision + myPWClass.testRecall) > 0:
+                myPWClass.testF1 = 2 * myPWClass.testPrecision * myPWClass.testRecall / (myPWClass.testPrecision + myPWClass.testRecall)
+
+            outFile.write('test' + ',' + str(myPWClass.testPrecision) + ',' + str(myPWClass.testRecall) \
+                          + ',' + str(myPWClass.testF1) + ',' + str(myPWClass.testAccuracy)\
+                          + ',' + str(myPWClass.T) + ',' + str(myPWClass.k) + ',' \
+                          + str(myPWClass.b) + ','\
+                          + str(myPWClass.testMistakes) + ',' + str(t + 1) + '\n')
+            logging.info('test' + ',' + str(myPWClass.testPrecision) + ',' + str(myPWClass.testRecall) \
+                          + ',' + str(myPWClass.testF1) + ',' + str(myPWClass.testAccuracy)\
+                          + ',' + str(myPWClass.T) + ',' + str(myPWClass.k) + ',' \
+                          + str(myPWClass.b) + ','\
+                          + str(myPWClass.testMistakes) + ',' + str(t + 1) + '\n')
+
+            '''
             myPRClass.testAccuracy = 100 - (100 * (myPRClass.testMistakes / float(myPRClass.testTotal)) )
             #print 'testMistakes = ', myPRClass.testMistakes, '   : test success = ', \
                   #myPRClass.testAccuracy, '%'
@@ -175,6 +198,7 @@ def individualProcess(kmer, letter):
                           + ',' + str(myPRClass.T) + ',' + str(myPRClass.k) + ',' \
                           + str(myPRClass.b) + ','\
                           + str(myPRClass.testMistakes) + ',' + str(t + 1) + '\n')
+            '''
 
     endTime = time.time()
     print 'Perceptron runTime: ', endTime - startTime

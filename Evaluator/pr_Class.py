@@ -82,17 +82,17 @@ class pr_Class():
             ### if they do match no update required
             if yit == 1:
                 self.trainGood += 1
-                if yHat > 0:
-                    self.trainnpr += 1
-                    self.traindp += 1
-                else:
+                if yHat > 0: #prediction is +1:
+                    self.trainnpr += 1 # correct +1 prediction
+                    self.traindp += 1 # +1 prediction count
+                else: # prediction is -1:
                     #print yit, ' : ', yHat
                     self.updateWeight(xit, yit)
                     self.trainMistakes += 1
-            else:
-                if yHat > 0:
+            else: # yit == -1
+                if yHat > 0: # if prediction is +1:
                     #print yit, ' : ', yHat
-                    self.traindp += 1
+                    self.traindp += 1 # +1 prediction count:
                     self.trainMistakes += 1
                     self.updateWeight(xit, yit)
 

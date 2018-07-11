@@ -17,7 +17,8 @@ myClass.loadData("/home/marcus/Data/Genomic-Data/testing", myClass.testData)
 '''
 myClass.countGood()
 
-outFile = open("/home/marcus/Documents/LinuxShare/Results/Perceptron/results_Set-1-no-bias.csv", "w")
+#outFile = open("/home/marcus/Documents/LinuxShare/Results/Perceptron/results_Set-1-no-bias.csv", "w")
+outFile = open("results_Set-1-no-bias.csv", "w")
 
 outFile.write('type' + ',' + 'Precision' + ',' + 'Recall' + ',' + 'F1' + ',' + \
               'Accuracy' + ',' + 'T' + ',' + 'K' + ',' \

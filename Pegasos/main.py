@@ -14,7 +14,8 @@ myClass.loadData("/home/marcus/Data/Genomic-Data/test-11", myClass.testData)
 myClass.countGood()
 
 ### open the results file:
-outFile = open("/home/marcus/Documents/LinuxShare/Results/Pegasos/results_variables-T.csv", "w")
+#outFile = open("/home/marcus/Documents/LinuxShare/Results/Pegasos/results_variables-T.csv", "w")
+outFile = open("results_variables-T.csv", "w")
 
 ### Add a header:
 outFile.write('type' + ',' + 'Precision' + ',' + 'Recall' + ',' + 'F1' + ',' + \
