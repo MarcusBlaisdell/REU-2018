@@ -256,6 +256,14 @@ def readData (dataName, maxReadSize, readFile):
 def readGene (thePath, gene, kmer, maxReadSize, functionName, myPRClass, t):
     fileName = thePath + gene + '-' + str(kmer)
     #print fileName
+    '''
+    #####
+    readFile = open ('/Users/MarcusBlaisdell/Documents/LinuxShare/tenK/0157-11', 'r')
+    testList = []
+    rFlag = readData (testList, maxReadSize, readFile)
+    readFile.close()
+    #####
+    '''
     readFile = open (fileName, 'r')
     readFlag = 1
     while readFlag == 1:
@@ -263,6 +271,28 @@ def readGene (thePath, gene, kmer, maxReadSize, functionName, myPRClass, t):
         readFlag = readData (runningList, maxReadSize, readFile)
         if functionName == 'perceptron':
             myPRClass.perceptron (runningList)
+            '''
+            myPRClass.testWeight (testList, t)
+            ### report results of testing
+
+            myPRClass.testAccuracy = 100 - (100 * (myPRClass.testMistakes / float(myPRClass.testTotal)) )
+            #print 'testMistakes = ', myPRClass.testMistakes, '   : test success = ', \
+                  #myPRClass.testAccuracy, '%'
+
+            if myPRClass.testdp > 0:
+                myPRClass.testPrecision = myPRClass.testnpr / float(myPRClass.testdp)
+            myPRClass.testRecall = myPRClass.testnpr / float(myPRClass.testGood)
+            #print 'testPrecision: ', myPRClass.testPrecision
+            #print 'testRecall: ', myPRClass.testRecall
+            if (myPRClass.testPrecision + myPRClass.testRecall) > 0:
+                myPRClass.testF1 = 2 * myPRClass.testPrecision * myPRClass.testRecall / (myPRClass.testPrecision + myPRClass.testRecall)
+
+            print ('test' , ',' , str(myPRClass.testPrecision) , ',' ,  str(myPRClass.testRecall) \
+                          , ',' , str(myPRClass.testF1) , ',' , str(myPRClass.testAccuracy)\
+                          , ',' , str(myPRClass.T) , ',' , str(myPRClass.k) , ',' \
+                          , str(myPRClass.b) , ','\
+                          , str(myPRClass.testMistakes) , ',' , str(t + 1) , '\n')
+        '''
         if functionName == 'testWeight':
             myPRClass.testWeight (runningList, t)
 

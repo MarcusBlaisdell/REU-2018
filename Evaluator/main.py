@@ -17,7 +17,8 @@ import time
 ### create array of the values to label the training, testing, results files:
 
 #geneList = ['0157', '2016C', 'CH611', 'Co6114', 'ED1a', 'EDL933-1', 'FAP1', '_isolate102', 'RS76', 'UMN026']
-geneList = ['2016C', 'CH611', 'Co6114']
+#geneList = ['2016C', 'CH611', 'Co6114']
+geneList = ['Co6114', 'CH611', '2016C']
 #geneList = ['2016C']
 geneTest = '0157'
 #kmerList = [11, 13, 15, 17]
@@ -33,7 +34,7 @@ maxReadSize = 2100
 
 #thePath = "/home/marcus/Data/Genomic-Data/Testing/"
 #thePath = "/data/doppa/users/mblaisdell/genome-assembly-datasets/"
-thePath = "/home/marcus/Testing/LOO2/tenK/"
+thePath = "/Users/MarcusBlaisdell/Documents/LinuxShare/tenK/"
 #thePath = ""
 #resultsStringPre = "/home/marcus/Documents/LinuxShare/Results/resultszU-A-b-1-100_"
 resultsStringPre = "results_" + geneTest + "_"
@@ -119,6 +120,7 @@ def individualProcess(kmer, letter):
                               + ',' + str(myPRClass.T) + ',' + str(myPRClass.k) + ',' \
                               + str(myPRClass.b) + ','\
                               + str(myPRClass.trainMistakes) + ',' + str(t + 1) + '\n')
+                print len(myPRClass.w)
 
             logging.info('training Complete')
 

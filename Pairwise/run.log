@@ -1,0 +1,37 @@
+INFO:root:Log File created
+INFO:root:results File: results_0157_11.csv
+INFO:root:set: 11
+INFO:root:loading data
+INFO:root:opening results file:
+
+INFO:root:type,Precision,Recall,F1,Accuracy,T,K,Bias,Mistakes,Iteration
+
+INFO:root:running pairwise . . . 
+
+INFO:root:train,0.170854271357,0.174358974359,0.172588832487,3.7,3,1000,0.0,963,1
+
+INFO:root:training Complete
+INFO:root:readGene called
+
+INFO:root:test,0.114559819413,0.0965746907707,0.104801239029,65.32,3,1000,0.0,3468,1
+
+INFO:root:train,0.318181818182,0.152542372881,0.206219312602,21.5,3,1000,0.0,785,2
+
+INFO:root:training Complete
+INFO:root:readGene called
+
+INFO:root:test,0.12987012987,0.152235965747,0.140166447657,56.16,3,1000,0.0,4384,2
+
+INFO:root:train,0.40404040404,0.132669983416,0.19975031211,25.1,3,1000,0.0,749,3
+
+INFO:root:training Complete
+INFO:root:readGene called
+
+INFO:root:test,0.138451585077,0.203615604186,0.164826700899,48.4,3,1000,0.0,5160,3
+
+INFO:root:Perceptron runTime: 4.35242891312
+
+INFO:root:closing output file . . .
+
+INFO:root:*** program complete ***
+

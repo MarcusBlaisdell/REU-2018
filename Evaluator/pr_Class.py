@@ -57,8 +57,7 @@ class pr_Class():
 
     #def perceptron(self, trainDataSet, testDataSet, outFile):
     def perceptron(self, trainDataSet):
-        #self.trainTotal = len(trainDataSet)
-
+        #print 'perceptron called'
         xit = [] # x-sub-i-sub-t, the training vector for the current iterations
         yit = 0 # y-sub-i-sub-t, the label for the current training vector (yStar)
         yHat = 0
@@ -67,6 +66,8 @@ class pr_Class():
             self.trainTotal += 1
             xit = trainDataSet[l][0]
             yit = trainDataSet[l][1]
+            if yit == 1:
+                self.trainGood += 1 ### increment count of actual good
 
             ### make the prediction: yHat = y*(<w,x>)
             #yHat = yit * self.dotProd(xit) # Method U
@@ -80,6 +81,18 @@ class pr_Class():
             ### if predicted value and actual value don't match,
             ## update weight,
             ### if they do match no update required
+
+            if yHat > 0:
+                self.traindp += 1 # +1 prediction count
+                if yit == 1:
+                    self.trainnpr += 1 # correct +1 prediction
+            else: ### yHat <= 0:
+                self.trainMistakes += 1
+                self.updateWeight(xit, yit)
+                if yit == 1:
+                    self.traindp += 1 # +1 prediction count
+
+            '''
             if yit == 1:
                 self.trainGood += 1
                 if yHat > 0: #prediction is +1:
@@ -95,6 +108,7 @@ class pr_Class():
                     self.traindp += 1 # +1 prediction count:
                     self.trainMistakes += 1
                     self.updateWeight(xit, yit)
+            '''
 
             ### end train loop, trains on each sample in trainData
 
@@ -118,6 +132,8 @@ class pr_Class():
             self.testTotal += 1
             xit = testDataSet[i][0]
             yit = testDataSet[i][1]
+            if yit == 1:
+                self.testGood += 1 ### increment count of actual good
 
             ### make the prediction:
             #yHat = yit * self.dotProd(xit) # Method A
@@ -128,6 +144,15 @@ class pr_Class():
             ### if the value is actually good,
             ### and we predicted good, increment npr
             ### which is the # lines predicted as good that are actually good
+            if yHat > 0:
+                self.testdp += 1 # +1 prediction count
+                if yit == 1:
+                    self.testnpr += 1 # correct +1 prediction
+            else: ### yHat <= 0:
+                self.testMistakes += 1
+                if yit == 1:
+                    self.testdp += 1 # +1 prediction count
+            '''
             if yit == 1:
                 self.testGood += 1
                 if yHat > 0:
@@ -136,9 +161,10 @@ class pr_Class():
                 else:
                     self.testMistakes += 1
             if yit == -1:
-                if yHat <= 0:
+                if yHat > 0:
                     self.testMistakes += 1
                     self.testdp += 1
+            '''
 
     ### end testWeight function
 
@@ -167,6 +193,7 @@ class pr_Class():
         ### update the weights in the weight vector that are in xit
         for element in xarray:
             self.w[element[0]] += self.eta * yStar * element[1]
+            #print 'weight: ', self.w[element[0]], '   yStar: ', yStar, '   element[1]', element[1]
 
         #endTime = time.time()
         #print 'updateWeight: ', endTime - startTime

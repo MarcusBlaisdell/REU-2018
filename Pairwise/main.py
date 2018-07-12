@@ -36,7 +36,7 @@ sampleSizeK = 1000
 
 #thePath = "/home/marcus/Data/Genomic-Data/Testing/"
 #thePath = "/data/doppa/users/mblaisdell/genome-assembly-datasets/"
-thePath = "/home/marcus/Testing/LOO2/tenK/"
+thePath = "/Users/MarcusBlaisdell/Documents/LinuxShare/tenK/"
 #thePath = ""
 #resultsStringPre = "/home/marcus/Documents/LinuxShare/Results/resultszU-A-b-1-100_"
 resultsStringPre = "results_" + geneTest + "_"
